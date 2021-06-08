@@ -22,7 +22,7 @@
 							{
 								"name": "dummy_value",
 								"value": {
-									"value": "concat(@pipeline().DataFactory,pipeline().TriggerId)",
+									"value": "'@pipeline().DataFactory_pipeline().TriggerId'",
 									"type": "Expression"
 								}
 							}
