@@ -1,0 +1,27 @@
+{
+	"name": "filtered_output",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkedservicesrisstorageaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "sriscontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ID\tName",
+				"type": "String"
+			}
+		]
+	}
+}
