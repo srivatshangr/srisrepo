@@ -1,0 +1,18 @@
+{
+	"name": "linkedservicesrisstorageaccount",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "linkedservicesrisdevkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "secretsrisstorage"
+			}
+		}
+	}
+}

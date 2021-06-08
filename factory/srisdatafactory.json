@@ -1,0 +1,9 @@
+{
+	"name": "srisdatafactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "aae291d8-eb81-4ded-8984-e8482d32977e",
+		"tenantId": "1d90784e-987b-42e9-961a-57f8cd1e2308"
+	}
+}
