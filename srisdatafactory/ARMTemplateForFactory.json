@@ -46,7 +46,7 @@
 									{
 										"name": "dummy_value",
 										"value": {
-											"value": "'@pipeline().DataFactory_pipeline().TriggerId'",
+											"value": "\"@{pipeline().DataFactory}_@{pipeline().TriggerId}\"",
 											"type": "Expression"
 										}
 									}
