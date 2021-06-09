@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "srisdatafactory"
 		},
-		"linkedservicesrisdevkeyvault_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://srisdevkeyvault.vault.azure.net/"
+		"srisstorage_linked_service_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'srisstorage_linked_service'"
 		},
-		"linkedservicesrisstorageaccount_properties_typeProperties_connectionString_secretName": {
+		"srisstorage_linked_service_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "secretsrisstorage"
+			"defaultValue": "https://srisstorageaccount.dfs.core.windows.net"
 		}
 	},
 	"variables": {
@@ -21,56 +21,39 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/linkedservicesrisdevkeyvault')]",
+			"name": "[concat(parameters('factoryName'), '/srisstorage_linked_service')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "AzureKeyVault",
+				"type": "AzureBlobFS",
 				"typeProperties": {
-					"baseUrl": "[parameters('linkedservicesrisdevkeyvault_properties_typeProperties_baseUrl')]"
+					"url": "[parameters('srisstorage_linked_service_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('srisstorage_linked_service_accountKey')]"
+					}
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/linkedservicesrisstorageaccount')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "linkedservicesrisdevkeyvault",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "[parameters('linkedservicesrisstorageaccount_properties_typeProperties_connectionString_secretName')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linkedservicesrisdevkeyvault')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/InputDataSet')]",
+			"name": "[concat(parameters('factoryName'), '/csvinput')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "linkedservicesrisstorageaccount",
+					"referenceName": "srisstorage_linked_service",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "part-00000-a07582c6-600e-489f-95a3-3d95f96f56a8-c000.csv",
-						"container": "rawfolder"
+						"type": "AzureBlobFSLocation",
+						"fileName": "csvinput.csv",
+						"folderPath": "inputFolder",
+						"fileSystem": "dev-container"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -82,160 +65,14 @@
 					},
 					{
 						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linkedservicesrisstorageaccount')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/filtered_output')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "linkedservicesrisstorageaccount",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "sriscontainer"
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
 					{
-						"name": "ID\tName",
 						"type": "String"
 					}
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linkedservicesrisstorageaccount')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/srispipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy Activity",
-						"description": "This activity copies data from blob container to ADLS container",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"additionalColumns": [
-									{
-										"name": "dummy_value",
-										"value": {
-											"value": "\"@{pipeline().DataFactory}_@{pipeline().TriggerId}\"",
-											"type": "Expression"
-										}
-									}
-								],
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings",
-									"skipLineCount": 1
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"type": "Int16",
-											"ordinal": 1
-										},
-										"sink": {
-											"name": "ID",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"type": "String",
-											"ordinal": 2
-										},
-										"sink": {
-											"name": "Name",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "dummy_value",
-											"type": "String"
-										},
-										"sink": {
-											"name": "PipeLineParameter",
-											"physicalType": "String"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "InputDataSet",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "filtered_output",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/InputDataSet')]",
-				"[concat(variables('factoryId'), '/datasets/filtered_output')]"
+				"[concat(variables('factoryId'), '/linkedServices/srisstorage_linked_service')]"
 			]
 		}
 	]

@@ -5,11 +5,11 @@
 		"factoryName": {
 			"value": "srisdatafactory"
 		},
-		"linkedservicesrisdevkeyvault_properties_typeProperties_baseUrl": {
-			"value": "https://srisdevkeyvault.vault.azure.net/"
+		"srisstorage_linked_service_accountKey": {
+			"value": ""
 		},
-		"linkedservicesrisstorageaccount_properties_typeProperties_connectionString_secretName": {
-			"value": "secretsrisstorage"
+		"srisstorage_linked_service_properties_typeProperties_url": {
+			"value": "https://srisstorageaccount.dfs.core.windows.net"
 		},
 		"containerUri": {
 			"value": ""

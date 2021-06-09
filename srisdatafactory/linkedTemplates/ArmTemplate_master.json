@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "srisdatafactory"
 		},
-		"linkedservicesrisdevkeyvault_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://srisdevkeyvault.vault.azure.net/"
+		"srisstorage_linked_service_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'srisstorage_linked_service'"
 		},
-		"linkedservicesrisstorageaccount_properties_typeProperties_connectionString_secretName": {
+		"srisstorage_linked_service_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "secretsrisstorage"
+			"defaultValue": "https://srisstorageaccount.dfs.core.windows.net"
 		},
 		"containerUri": {
 			"type": "string",
@@ -42,11 +42,11 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"linkedservicesrisdevkeyvault_properties_typeProperties_baseUrl": {
-						"value": "[parameters('linkedservicesrisdevkeyvault_properties_typeProperties_baseUrl')]"
+					"srisstorage_linked_service_accountKey": {
+						"value": "[parameters('srisstorage_linked_service_accountKey')]"
 					},
-					"linkedservicesrisstorageaccount_properties_typeProperties_connectionString_secretName": {
-						"value": "[parameters('linkedservicesrisstorageaccount_properties_typeProperties_connectionString_secretName')]"
+					"srisstorage_linked_service_properties_typeProperties_url": {
+						"value": "[parameters('srisstorage_linked_service_properties_typeProperties_url')]"
 					}
 				}
 			},
