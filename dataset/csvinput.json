@@ -1,0 +1,33 @@
+{
+	"name": "csvinput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "srisstorage_linked_service",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "csvinput.csv",
+				"folderPath": "inputFolder",
+				"fileSystem": "dev-container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
